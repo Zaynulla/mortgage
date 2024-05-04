@@ -72,9 +72,10 @@ def generate_mortgage_schedule(
     while remaining_balance > 1:  # пока долг больше 1 рубля
         month += 1
         interest_payment = remaining_balance * monthly_interest_rate
-        monthly_payment = min(monthly_payment, remaining_balance)
+
         principal_payment = monthly_payment - interest_payment
         principal_payment += occasional_payments_reducing_period.get(month, 0)
+        principal_payment = min(principal_payment, remaining_balance)
 
         remaining_balance -= principal_payment
 
@@ -91,7 +92,7 @@ def generate_mortgage_schedule(
                 "Month": month,
                 "Principal Payment": principal_payment,
                 "Interest Payment": interest_payment,
-                "Total Payment": monthly_payment,
+                "Total Payment": principal_payment + interest_payment,
                 "Remaining Balance": remaining_balance,
             }
         )
@@ -100,7 +101,7 @@ def generate_mortgage_schedule(
 
 
 # %%
-event_payments_reducing_period = {
+occasional_payments_reducing_period = {
     7: 520_000,
 }
 # month_num: amount
@@ -110,7 +111,7 @@ data = generate_mortgage_schedule(
     initial_payment=5_000_000,
     annual_interest_rate=0.183,
     amortization_period_years=7,
-    occasional_payments_reducing_period=event_payments_reducing_period,
+    occasional_payments_reducing_period=occasional_payments_reducing_period,
 )
 
 df = pd.DataFrame(data)
