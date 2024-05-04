@@ -124,4 +124,13 @@ actual_years = df.shape[0] / 12
 full_years = int(actual_years)
 months = int((actual_years - full_years) * 12)
 print(f"Ипотека будет выплачена за {int(actual_years)} лет {months} мес.")
+
 # %%
+df_1 = df[["Month", "Required monthly payment"]]
+df_1["Rounded required payment"] = df["Required monthly payment"] / 10_000
+df_1["Rounded required payment"] = df_1["Rounded required payment"].astype(int) * 10_000
+df_1["Month/Year"] = df["Month"].apply(lambda m: f"{m-int(m/12)*12:02}/{int(m/12)}")
+df_1.drop(columns=["Required monthly payment", "Month"], inplace=True)
+df_1.groupby("Rounded required payment").agg("min").sort_values(
+    by=["Rounded required payment"], ascending=False
+)
