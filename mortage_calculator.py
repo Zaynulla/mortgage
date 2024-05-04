@@ -7,18 +7,17 @@ import pandas as pd
 
 # %%
 def calculate_monthly_payment(
-    total_amount, initial_payment, monthly_interest_rate, amortization_period_months
+    remaining_balance,
+    monthly_interest_rate,
+    amortization_period_months,
 ):
-    total_amount = float(total_amount)
+    remaining_balance = float(remaining_balance)
     amortization_period_months = int(amortization_period_months)
-    initial_payment = float(initial_payment)
     monthly_interest_rate = float(monthly_interest_rate)
-
-    total_amount -= initial_payment
 
     if (monthly_interest_rate > 0) and (amortization_period_months > 0):
         payment = (
-            total_amount
+            remaining_balance
             * (
                 monthly_interest_rate
                 * (1 + monthly_interest_rate) ** amortization_period_months
@@ -50,6 +49,7 @@ def generate_mortgage_schedule(
     initial_payment,
     annual_interest_rate,
     amortization_period_years,
+    actual_monthly_payment,
     occasional_payments_reducing_period: dict,
 ):
     total_amount = float(total_amount)
@@ -59,12 +59,6 @@ def generate_mortgage_schedule(
 
     monthly_interest_rate = annual_interest_rate / 12
 
-    monthly_payment = calculate_monthly_payment(
-        total_amount=total_amount,
-        initial_payment=initial_payment,
-        monthly_interest_rate=monthly_interest_rate,
-        amortization_period_months=amortization_period_months,
-    )
     remaining_balance = total_amount - initial_payment
     mortgage_schedule = []
 
@@ -73,27 +67,34 @@ def generate_mortgage_schedule(
         month += 1
         interest_payment = remaining_balance * monthly_interest_rate
 
-        principal_payment = monthly_payment - interest_payment
+        principal_payment = actual_monthly_payment - interest_payment
         principal_payment += occasional_payments_reducing_period.get(month, 0)
         principal_payment = min(principal_payment, remaining_balance)
 
         remaining_balance -= principal_payment
 
+        required_monthly_payment = calculate_monthly_payment(
+            remaining_balance=remaining_balance,
+            monthly_interest_rate=monthly_interest_rate,
+            amortization_period_months=amortization_period_months,
+        )
+
         # Обрабатываем разовые платежи
         if month in occasional_payments_reducing_period:
             amortization_period_months = month + calculate_new_amortization_period(
                 monthly_interest_rate=monthly_interest_rate,
-                monthly_payment=monthly_payment,
+                monthly_payment=required_monthly_payment,
                 remaining_balance=remaining_balance,
             )
 
         mortgage_schedule.append(
             {
                 "Month": month,
-                "Principal Payment": principal_payment,
-                "Interest Payment": interest_payment,
-                "Total Payment": principal_payment + interest_payment,
-                "Remaining Balance": remaining_balance,
+                "Principal payment": principal_payment,
+                "Interest payment": interest_payment,
+                "Total payment": principal_payment + interest_payment,
+                "Required monthly payment": required_monthly_payment,
+                "Remaining balance": remaining_balance,
             }
         )
 
@@ -109,8 +110,9 @@ occasional_payments_reducing_period = {
 data = generate_mortgage_schedule(
     total_amount=11_000_000,
     initial_payment=5_000_000,
-    annual_interest_rate=0.183,
-    amortization_period_years=7,
+    annual_interest_rate=0.20,
+    amortization_period_years=30,
+    actual_monthly_payment=130_000,
     occasional_payments_reducing_period=occasional_payments_reducing_period,
 )
 
