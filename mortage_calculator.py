@@ -1,8 +1,46 @@
 # https://vc.ru/money/716629-kak-rasschityvayutsya-dosrochnye-platezhi-po-ipoteke-vyvod-formul?ysclid=lvsap23zg1652408946
 # %%
+from dataclasses import dataclass, replace
 from math import ceil, log
 
 import pandas as pd
+from IPython.display import display
+
+# %%
+# https://pandas.pydata.org/pandas-docs/stable/user_guide/copy_on_write.html
+pd.options.mode.copy_on_write = True
+
+
+# %%
+@dataclass
+class MortageConditions:
+    total_amount: int
+    initial_payment: int
+    annual_interest_rate: float
+    amortization_period_years: int
+    actual_monthly_payment: int
+    occasional_payments_reducing_period: dict[int, int]
+
+    def __str__(self) -> str:
+        occasional_payments_reducing_period_str = "\n".join(
+            [
+                f"\t{month:3}:{payment:6}"
+                for month, payment in self.occasional_payments_reducing_period.items()
+            ]
+        )
+        return "\n".join(
+            [
+                f"Общая сумма {self.total_amount}",
+                f"Первоначальный взнос {self.initial_payment}",
+                f"Процентная ставка {self.annual_interest_rate}",
+                f"Срок ипотеки {self.amortization_period_years}",
+                f"Планируемые ежемесячный платеж {self.actual_monthly_payment}",
+                (
+                    "Планируемые разовые платежи:\n"
+                    f"{occasional_payments_reducing_period_str}"
+                ),
+            ]
+        )
 
 
 # %%
@@ -44,22 +82,11 @@ def calculate_new_amortization_period(
     )
 
 
-def generate_mortgage_schedule(
-    total_amount,
-    initial_payment,
-    annual_interest_rate,
-    amortization_period_years,
-    actual_monthly_payment,
-    occasional_payments_reducing_period: dict,
-):
-    total_amount = float(total_amount)
-    amortization_period_months = int(amortization_period_years) * 12
-    initial_payment = float(initial_payment)
-    annual_interest_rate = float(annual_interest_rate)
+def generate_mortgage_schedule(data: MortageConditions):
+    amortization_period_months = data.amortization_period_years * 12
+    monthly_interest_rate = data.annual_interest_rate / 12
 
-    monthly_interest_rate = annual_interest_rate / 12
-
-    remaining_balance = total_amount - initial_payment
+    remaining_balance = data.total_amount - data.initial_payment
     mortgage_schedule = []
 
     month = 0
@@ -67,7 +94,7 @@ def generate_mortgage_schedule(
         month += 1
         interest_payment = remaining_balance * monthly_interest_rate
 
-        principal_payment = actual_monthly_payment - interest_payment
+        principal_payment = data.actual_monthly_payment - interest_payment
         principal_payment += occasional_payments_reducing_period.get(month, 0)
         principal_payment = min(principal_payment, remaining_balance)
 
@@ -102,12 +129,33 @@ def generate_mortgage_schedule(
 
 
 # %%
+def print_mortage_main_info(mortage_conditions: MortageConditions):
+    data = generate_mortgage_schedule(mortage_conditions)
+
+    df = pd.DataFrame(data)
+    # df.style.hide(axis="index")
+
+    actual_years = df.shape[0] / 12
+    full_years = int(actual_years)
+    months = int((actual_years - full_years) * 12)
+    print(f"Ипотека будет выплачена за {int(actual_years)} лет {months} мес.")
+    print(mortage_conditions)
+
+    df_1 = df[["Month", "Required monthly payment"]]
+    df_1 = df_1[df_1["Month"] % 12 == 0]
+    df_1["Full years"] = df_1["Month"] // 12
+    df_1["Required monthly payment"] = df_1["Required monthly payment"].astype(int)
+    df_1 = df_1[["Full years", "Required monthly payment"]]
+    display(df_1.style.hide(axis="index"))
+
+
+# %%
 occasional_payments_reducing_period = {
     7: 520_000,
 }
 # month_num: amount
 
-data = generate_mortgage_schedule(
+mortage_conditions_1 = MortageConditions(
     total_amount=11_000_000,
     initial_payment=5_000_000,
     annual_interest_rate=0.20,
@@ -116,21 +164,11 @@ data = generate_mortgage_schedule(
     occasional_payments_reducing_period=occasional_payments_reducing_period,
 )
 
-df = pd.DataFrame(data)
-df
+# %%
+print_mortage_main_info(mortage_conditions_1)
 
 # %%
-actual_years = df.shape[0] / 12
-full_years = int(actual_years)
-months = int((actual_years - full_years) * 12)
-print(f"Ипотека будет выплачена за {int(actual_years)} лет {months} мес.")
+mortage_conditions_2 = replace(mortage_conditions_1, total_amount=12_000_000)
+print_mortage_main_info(mortage_conditions_2)
 
 # %%
-df_1 = df[["Month", "Required monthly payment"]]
-df_1["Rounded required payment"] = df["Required monthly payment"] / 10_000
-df_1["Rounded required payment"] = df_1["Rounded required payment"].astype(int) * 10_000
-df_1["Month/Year"] = df["Month"].apply(lambda m: f"{m-int(m/12)*12:02}/{int(m/12)}")
-df_1.drop(columns=["Required monthly payment", "Month"], inplace=True)
-df_1.groupby("Rounded required payment").agg("min").sort_values(
-    by=["Rounded required payment"], ascending=False
-)
