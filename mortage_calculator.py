@@ -6,6 +6,12 @@ from math import ceil, log
 import pandas as pd
 from IPython.display import display
 
+
+# %%
+class NotEnoughActualMonthlyPayment(Exception):
+    pass
+
+
 # %%
 # https://pandas.pydata.org/pandas-docs/stable/user_guide/copy_on_write.html
 pd.options.mode.copy_on_write = True
@@ -106,6 +112,10 @@ def generate_mortgage_schedule(data: MortageConditions):
             amortization_period_months=amortization_period_months,
         )
 
+        if principal_payment < 0:
+            msg = f"Требуемый платеж {required_monthly_payment}"
+            raise NotEnoughActualMonthlyPayment(msg)
+
         # Обрабатываем разовые платежи
         if month in occasional_payments_reducing_period:
             amortization_period_months = month + calculate_new_amortization_period(
@@ -129,18 +139,25 @@ def generate_mortgage_schedule(data: MortageConditions):
 
 
 # %%
-def print_mortage_main_info(mortage_conditions: MortageConditions):
-    data = generate_mortgage_schedule(mortage_conditions)
-
-    df = pd.DataFrame(data)
-    # df.style.hide(axis="index")
+def calc_mortage_duration(payments_schedule_data: dict):
+    df = pd.DataFrame(payments_schedule_data)
 
     actual_years = df.shape[0] / 12
     full_years = int(actual_years)
     months = int((actual_years - full_years) * 12)
+
+    return actual_years, months
+
+
+# %%
+def print_mortage_main_info(mortage_conditions: MortageConditions):
+    data = generate_mortgage_schedule(mortage_conditions)
+
+    actual_years, months = calc_mortage_duration(data)
     print(f"Ипотека будет выплачена за {int(actual_years)} лет {months} мес.")
     print(mortage_conditions)
 
+    df = pd.DataFrame(data)
     df_1 = df[["Month", "Required monthly payment"]]
     df_1 = df_1[df_1["Month"] % 12 == 0]
     df_1["Full years"] = df_1["Month"] // 12
@@ -158,7 +175,7 @@ occasional_payments_reducing_period = {
 mortage_conditions_1 = MortageConditions(
     total_amount=11_000_000,
     initial_payment=5_000_000,
-    annual_interest_rate=0.20,
+    annual_interest_rate=0.164,
     amortization_period_years=30,
     actual_monthly_payment=130_000,
     occasional_payments_reducing_period=occasional_payments_reducing_period,
@@ -168,7 +185,26 @@ mortage_conditions_1 = MortageConditions(
 print_mortage_main_info(mortage_conditions_1)
 
 # %%
-mortage_conditions_2 = replace(mortage_conditions_1, total_amount=12_000_000)
+luxury_price = 14_500_000
+print("Дорогая квартира сразу")
+mortage_conditions_2 = replace(mortage_conditions_1, total_amount=luxury_price)
 print_mortage_main_info(mortage_conditions_2)
+
+# %%
+print("Дорогая квартира поэтапно")
+initial_payment = mortage_conditions_1.total_amount
+mortage_conditions_3 = replace(mortage_conditions_2, initial_payment=initial_payment)
+print_mortage_main_info(mortage_conditions_3)
+
+# %%
+print("Дорогая квартира поэтапно")
+more_luxury_price = 18_000_000
+initial_payment = mortage_conditions_1.total_amount
+mortage_conditions_3 = replace(
+    mortage_conditions_2,
+    initial_payment=initial_payment,
+    total_amount=more_luxury_price,
+)
+print_mortage_main_info(mortage_conditions_3)
 
 # %%
