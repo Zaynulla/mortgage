@@ -4,7 +4,7 @@ from dataclasses import replace
 
 import pandas as pd
 
-from utils import MortageConditions, print_mortage_main_info
+from utils import MortgageConditions, print_mortgage_main_info
 
 # %%
 # https://pandas.pydata.org/pandas-docs/stable/user_guide/copy_on_write.html
@@ -14,7 +14,7 @@ pd.options.mode.copy_on_write = True
 # %%
 print("Базовая вторичка")
 
-cheap_ugly_second_hand = MortageConditions(
+cheap_ugly_second_hand = MortgageConditions(
     total_amount=11_000_000,
     initial_payment=5_000_000,
     annual_interest_rate=0.164,
@@ -23,7 +23,7 @@ cheap_ugly_second_hand = MortageConditions(
     occasional_payments_reducing_period={7: 520_000},
 )
 
-print_mortage_main_info(cheap_ugly_second_hand)
+print_mortgage_main_info(cheap_ugly_second_hand)
 
 
 # %%
@@ -32,7 +32,7 @@ luxury_price = 14_500_000
 well_enough_second_hand_immediately = replace(
     cheap_ugly_second_hand, total_amount=luxury_price
 )
-print_mortage_main_info(well_enough_second_hand_immediately)
+print_mortgage_main_info(well_enough_second_hand_immediately)
 
 
 # %%
@@ -43,7 +43,7 @@ well_enough_after_ugly = replace(
     initial_payment=initial_payment,
     occasional_payments_reducing_period={},  # на втором этапе не получаем льготу
 )
-print_mortage_main_info(well_enough_after_ugly)
+print_mortgage_main_info(well_enough_after_ugly)
 
 
 # %%
@@ -54,7 +54,7 @@ it_mortgage_slavery = replace(
     annual_interest_rate=0.046,
     actual_monthly_payment=130_000,
 )
-print_mortage_main_info(it_mortgage_slavery)
+print_mortgage_main_info(it_mortgage_slavery)
 
 
 # %%

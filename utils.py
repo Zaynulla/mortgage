@@ -10,7 +10,7 @@ class NotEnoughActualMonthlyPayment(Exception):
 
 
 @dataclass
-class MortageConditions:
+class MortgageConditions:
     total_amount: int
     initial_payment: int
     annual_interest_rate: float
@@ -78,7 +78,7 @@ def calculate_new_amortization_period(
     )
 
 
-def generate_mortgage_schedule(data: MortageConditions):
+def generate_mortgage_schedule(data: MortgageConditions):
     amortization_period_months = data.amortization_period_years * 12
     monthly_interest_rate = data.annual_interest_rate / 12
     occasional_payments_reducing_period = data.occasional_payments_reducing_period
@@ -129,7 +129,7 @@ def generate_mortgage_schedule(data: MortageConditions):
     return mortgage_schedule
 
 
-def calc_mortage_duration(payments_schedule_data: dict):
+def calc_mortgage_duration(payments_schedule_data: dict):
     # TODO здесь не обязательно конвертировать в DataFrame?
     df = pd.DataFrame(payments_schedule_data)
 
@@ -140,12 +140,12 @@ def calc_mortage_duration(payments_schedule_data: dict):
     return actual_years, months
 
 
-def print_mortage_main_info(mortage_conditions: MortageConditions):
-    data = generate_mortgage_schedule(mortage_conditions)
+def print_mortgage_main_info(mortgage_conditions: MortgageConditions):
+    data = generate_mortgage_schedule(mortgage_conditions)
 
-    actual_years, months = calc_mortage_duration(data)
+    actual_years, months = calc_mortgage_duration(data)
     print(f"Ипотека будет выплачена за {int(actual_years)} лет {months} мес.")
-    print(mortage_conditions)
+    print(mortgage_conditions)
 
     df = pd.DataFrame(data)
     df_1 = df[["Month", "Required monthly payment"]]
