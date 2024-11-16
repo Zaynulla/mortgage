@@ -47,3 +47,14 @@ print_mortage_main_info(well_enough_after_ugly)
 
 
 # %%
+print("IT-ипотека")
+it_mortgage_slavery = replace(
+    cheap_ugly_second_hand,
+    total_amount=20_000_000,
+    annual_interest_rate=0.046,
+    actual_monthly_payment=130_000,
+)
+print_mortage_main_info(it_mortgage_slavery)
+
+
+# %%
