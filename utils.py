@@ -148,9 +148,9 @@ def print_mortgage_main_info(mortgage_conditions: MortgageConditions):
     print(mortgage_conditions)
 
     df = pd.DataFrame(data)
-    df_1 = df[["Month", "Required monthly payment"]]
-    df_1 = df_1[df_1["Month"] % 12 == 0]
-    df_1["Full years"] = df_1["Month"] // 12
-    df_1["Required monthly payment"] = df_1["Required monthly payment"].astype(int)
-    df_1 = df_1[["Full years", "Required monthly payment"]]
-    display(df_1.style.hide(axis="index"))
+    df = df[["Month", "Required monthly payment"]]
+    df = df[df["Month"] % 12 == 0]
+    df["Full years"] = df["Month"] // 12
+    df["Required monthly payment"] = df["Required monthly payment"].astype(int)
+    df = df[["Full years", "Required monthly payment"]]
+    display(df.style.hide(axis="index"))
