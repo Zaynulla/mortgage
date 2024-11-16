@@ -14,6 +14,6 @@ exclude = [
   "__pycache__",
   ".vscode",
   ".git",
-  ".gitlab",
+  ".gitflic",
   ".venv",
 ]
