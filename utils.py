@@ -27,7 +27,7 @@ class MortgageConditions:
         )
         return "\n".join(
             [
-                f"Общая сумма {self.total_amount}",
+                f"Стоимость объекта недвижимости {self.total_amount}",
                 f"Первоначальный взнос {self.initial_payment}",
                 f"Процентная ставка {self.annual_interest_rate}",
                 f"Начальный срок ипотеки {self.amortization_period_years}",
