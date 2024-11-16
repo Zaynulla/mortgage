@@ -31,7 +31,7 @@ class MortageConditions:
                 f"Первоначальный взнос {self.initial_payment}",
                 f"Процентная ставка {self.annual_interest_rate}",
                 f"Начальный срок ипотеки {self.amortization_period_years}",
-                f"Планируемые ежемесячный платеж {self.actual_monthly_payment}",
+                f"Планируемый ежемесячный платеж {self.actual_monthly_payment}",
                 (
                     "Планируемые разовые платежи:\n"
                     f"{occasional_payments_reducing_period_str}"
