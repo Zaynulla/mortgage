@@ -30,7 +30,7 @@ class MortageConditions:
     def __str__(self) -> str:
         occasional_payments_reducing_period_str = "\n".join(
             [
-                f"\t{month:3}:{payment:6}"
+                f"\t{month:3} мес: {payment:6}"
                 for month, payment in self.occasional_payments_reducing_period.items()
             ]
         )
@@ -39,7 +39,7 @@ class MortageConditions:
                 f"Общая сумма {self.total_amount}",
                 f"Первоначальный взнос {self.initial_payment}",
                 f"Процентная ставка {self.annual_interest_rate}",
-                f"Срок ипотеки {self.amortization_period_years}",
+                f"Начальный срок ипотеки {self.amortization_period_years}",
                 f"Планируемые ежемесячный платеж {self.actual_monthly_payment}",
                 (
                     "Планируемые разовые платежи:\n"
@@ -167,12 +167,14 @@ def print_mortage_main_info(mortage_conditions: MortageConditions):
 
 
 # %%
+print("Базовая вторичка")
+
 occasional_payments_reducing_period = {
+    # month_num: amount
     7: 520_000,
 }
-# month_num: amount
 
-mortage_conditions_1 = MortageConditions(
+cheap_ugly_second_hand = MortageConditions(
     total_amount=11_000_000,
     initial_payment=5_000_000,
     annual_interest_rate=0.164,
@@ -181,30 +183,24 @@ mortage_conditions_1 = MortageConditions(
     occasional_payments_reducing_period=occasional_payments_reducing_period,
 )
 
-# %%
-print_mortage_main_info(mortage_conditions_1)
+print_mortage_main_info(cheap_ugly_second_hand)
 
 # %%
+print("Приличная вторичка")
 luxury_price = 14_500_000
-print("Дорогая квартира сразу")
-mortage_conditions_2 = replace(mortage_conditions_1, total_amount=luxury_price)
-print_mortage_main_info(mortage_conditions_2)
-
-# %%
-print("Дорогая квартира поэтапно")
-initial_payment = mortage_conditions_1.total_amount
-mortage_conditions_3 = replace(mortage_conditions_2, initial_payment=initial_payment)
-print_mortage_main_info(mortage_conditions_3)
-
-# %%
-print("Дорогая квартира поэтапно")
-more_luxury_price = 18_000_000
-initial_payment = mortage_conditions_1.total_amount
-mortage_conditions_3 = replace(
-    mortage_conditions_2,
-    initial_payment=initial_payment,
-    total_amount=more_luxury_price,
+well_enough_second_hand_immediately = replace(
+    cheap_ugly_second_hand, total_amount=luxury_price
 )
-print_mortage_main_info(mortage_conditions_3)
+print_mortage_main_info(well_enough_second_hand_immediately)
+
+# %%
+print("Приличная вторичка после продажи базовой вторички")
+initial_payment = cheap_ugly_second_hand.total_amount
+well_enough_as_second_stage = replace(
+    well_enough_second_hand_immediately,
+    initial_payment=initial_payment,
+    occasional_payments_reducing_period={},  # на втором этапе не получаем льготу
+)
+print_mortage_main_info(well_enough_as_second_stage)
 
 # %%
