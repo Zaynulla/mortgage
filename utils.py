@@ -11,7 +11,7 @@ class NotEnoughActualMonthlyPayment(Exception):
 
 @dataclass
 class MortgageConditions:
-    total_amount: int
+    property_cost: int
     initial_payment: int
     annual_interest_rate: float
     amortization_period_years: int
@@ -27,7 +27,7 @@ class MortgageConditions:
         )
         return "\n".join(
             [
-                f"Стоимость объекта недвижимости {self.total_amount}",
+                f"Стоимость объекта недвижимости {self.property_cost}",
                 f"Первоначальный взнос {self.initial_payment}",
                 f"Процентная ставка {self.annual_interest_rate}",
                 f"Начальный срок ипотеки {self.amortization_period_years}",
@@ -38,6 +38,20 @@ class MortgageConditions:
                 ),
             ]
         )
+
+    def print_mortgage_main_info(self):
+        data = generate_mortgage_schedule(self)
+        actual_years, months = calc_mortgage_duration(data)
+        print(f"Ипотека будет выплачена за {int(actual_years)} лет {months} мес.")
+        print(self)
+
+        df = pd.DataFrame(data)
+        df = df[["Month", "Required monthly payment"]]
+        df = df[df["Month"] % 12 == 0]
+        df["Full years"] = df["Month"] // 12
+        df["Required monthly payment"] = df["Required monthly payment"].astype(int)
+        df = df[["Full years", "Required monthly payment"]]
+        display(df.style.hide(axis="index"))
 
 
 def calculate_monthly_payment(
@@ -50,6 +64,10 @@ def calculate_monthly_payment(
     monthly_interest_rate = float(monthly_interest_rate)
 
     if (monthly_interest_rate > 0) and (amortization_period_months > 0):
+        # TODO вот тут как-будто можно перегруппировать, как минимум вынести множитель
+        # monthly_interest_rate. А ещё лучше разделить, если возможно, на слагаемые:
+        # часть в погашение тела долга и часть на выплату процентов. Проверить совпадает
+        # ли формула с другой частью кода.
         payment = (
             remaining_balance
             * (
@@ -83,22 +101,22 @@ def generate_mortgage_schedule(data: MortgageConditions):
     monthly_interest_rate = data.annual_interest_rate / 12
     occasional_payments_reducing_period = data.occasional_payments_reducing_period
 
-    remaining_balance = data.total_amount - data.initial_payment
+    remaining_debt = data.property_cost - data.initial_payment
     mortgage_schedule = []
 
     month = 0
-    while remaining_balance > 1:  # пока долг больше 1 рубля
+    while remaining_debt > 1:  # пока долг больше 1 рубля
         month += 1
-        interest_payment = remaining_balance * monthly_interest_rate
+        interest_payment = remaining_debt * monthly_interest_rate
 
         principal_payment = data.actual_monthly_payment - interest_payment
         principal_payment += occasional_payments_reducing_period.get(month, 0)
-        principal_payment = min(principal_payment, remaining_balance)
+        principal_payment = min(principal_payment, remaining_debt)
 
-        remaining_balance -= principal_payment
+        remaining_debt -= principal_payment
 
         required_monthly_payment = calculate_monthly_payment(
-            remaining_balance=remaining_balance,
+            remaining_balance=remaining_debt,
             monthly_interest_rate=monthly_interest_rate,
             amortization_period_months=amortization_period_months,
         )
@@ -112,7 +130,7 @@ def generate_mortgage_schedule(data: MortgageConditions):
             amortization_period_months = month + calculate_new_amortization_period(
                 monthly_interest_rate=monthly_interest_rate,
                 monthly_payment=required_monthly_payment,
-                remaining_balance=remaining_balance,
+                remaining_balance=remaining_debt,
             )
 
         mortgage_schedule.append(
@@ -122,7 +140,7 @@ def generate_mortgage_schedule(data: MortgageConditions):
                 "Interest payment": interest_payment,
                 "Total payment": principal_payment + interest_payment,
                 "Required monthly payment": required_monthly_payment,
-                "Remaining balance": remaining_balance,
+                "Remaining debt": remaining_debt,
             }
         )
 
@@ -138,19 +156,3 @@ def calc_mortgage_duration(payments_schedule_data: dict):
     months = int((actual_years - full_years) * 12)
 
     return actual_years, months
-
-
-def print_mortgage_main_info(mortgage_conditions: MortgageConditions):
-    data = generate_mortgage_schedule(mortgage_conditions)
-
-    actual_years, months = calc_mortgage_duration(data)
-    print(f"Ипотека будет выплачена за {int(actual_years)} лет {months} мес.")
-    print(mortgage_conditions)
-
-    df = pd.DataFrame(data)
-    df = df[["Month", "Required monthly payment"]]
-    df = df[df["Month"] % 12 == 0]
-    df["Full years"] = df["Month"] // 12
-    df["Required monthly payment"] = df["Required monthly payment"].astype(int)
-    df = df[["Full years", "Required monthly payment"]]
-    display(df.style.hide(axis="index"))
