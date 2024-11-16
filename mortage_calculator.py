@@ -14,18 +14,13 @@ pd.options.mode.copy_on_write = True
 # %%
 print("Базовая вторичка")
 
-occasional_payments_reducing_period = {
-    # month_num: amount
-    7: 520_000,
-}
-
 cheap_ugly_second_hand = MortageConditions(
     total_amount=11_000_000,
     initial_payment=5_000_000,
     annual_interest_rate=0.164,
     amortization_period_years=30,
     actual_monthly_payment=130_000,
-    occasional_payments_reducing_period=occasional_payments_reducing_period,
+    occasional_payments_reducing_period={7: 520_000},
 )
 
 print_mortage_main_info(cheap_ugly_second_hand)
