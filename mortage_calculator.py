@@ -196,11 +196,11 @@ print_mortage_main_info(well_enough_second_hand_immediately)
 # %%
 print("Приличная вторичка после продажи базовой вторички")
 initial_payment = cheap_ugly_second_hand.total_amount
-well_enough_as_second_stage = replace(
+well_enough_after_ugly = replace(
     well_enough_second_hand_immediately,
     initial_payment=initial_payment,
     occasional_payments_reducing_period={},  # на втором этапе не получаем льготу
 )
-print_mortage_main_info(well_enough_as_second_stage)
+print_mortage_main_info(well_enough_after_ugly)
 
 # %%
