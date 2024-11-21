@@ -14,11 +14,11 @@ pd.options.mode.copy_on_write = True
 # %%
 print("Базовая вторичка")
 cheap_ugly_second_hand = MortgageConditions(
-    property_cost=11_000_000,
+    property_cost=10_000_000,
     initial_payment=5_000_000,
     annual_interest_rate=0.164,
     amortization_period_years=30,
-    actual_monthly_payment=130_000,
+    actual_monthly_payment=100_000,
     occasional_payments_reducing_period={7: 520_000},
 )
 cheap_ugly_second_hand.print_mortgage_main_info()
@@ -28,7 +28,7 @@ cheap_ugly_second_hand.print_mortgage_main_info()
 print("Приличная вторичка")
 well_enough_second_hand = replace(
     cheap_ugly_second_hand,
-    property_cost=14_500_000,
+    property_cost=15_000_000,
 )
 well_enough_second_hand.print_mortgage_main_info()
 
