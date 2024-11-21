@@ -15,10 +15,13 @@ class NotEnoughActualMonthlyPayment(Exception):
 class MortgageConditions:
     property_cost: int
     initial_payment: int
-    annual_interest_rate: float
+    annual_interest_rate_percent: float
     amortization_period_years: int
     actual_monthly_payment: int
     occasional_payments_reducing_period: dict[int, int]
+
+    def __post_init__(self) -> None:
+        self.annual_interest_rate = self.annual_interest_rate_percent / 100
 
     def __str__(self) -> str:
         occasional_payments_reducing_period_str = "\n".join(
@@ -31,7 +34,7 @@ class MortgageConditions:
             [
                 f"Стоимость объекта недвижимости {self.property_cost:_}",
                 f"Первоначальный взнос {self.initial_payment:_}",
-                f"Процентная ставка {self.annual_interest_rate * 100:.1f} %",
+                f"Процентная ставка {self.annual_interest_rate * 100:.1f}%",
                 f"Начальный срок ипотеки {self.amortization_period_years}",
                 f"Планируемый ежемесячный платеж {self.actual_monthly_payment:_}",
                 (

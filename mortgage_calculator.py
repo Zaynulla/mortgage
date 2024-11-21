@@ -16,7 +16,7 @@ print("Базовая вторичка")
 cheap_ugly_second_hand = MortgageConditions(
     property_cost=10_000_000,
     initial_payment=5_000_000,
-    annual_interest_rate=0.15,
+    annual_interest_rate_percent=15.0,
     amortization_period_years=30,
     actual_monthly_payment=100_000,
     occasional_payments_reducing_period={7: 520_000},
@@ -48,7 +48,7 @@ print("IT-ипотека")
 it_mortgage_slavery = replace(
     cheap_ugly_second_hand,
     property_cost=20_000_000,
-    annual_interest_rate=0.046,
+    annual_interest_rate_percent=4.6,
 )
 it_mortgage_slavery.print_mortgage_main_info()
 
