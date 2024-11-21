@@ -51,7 +51,7 @@ class MortgageConditions:
         df["Full years"] = df["Month"] // 12
         df["Required monthly payment"] = df["Required monthly payment"].astype(int)
         df = df[["Full years", "Required monthly payment"]]
-        display(df.style.hide(axis="index"))
+        display(df.style.format(thousands=" ").hide(axis="index"))
 
 
 def calculate_monthly_payment(
