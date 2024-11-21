@@ -16,7 +16,7 @@ print("Базовая вторичка")
 cheap_ugly_second_hand = MortgageConditions(
     property_cost=10_000_000,
     initial_payment=5_000_000,
-    annual_interest_rate=0.164,
+    annual_interest_rate=0.15,
     amortization_period_years=30,
     actual_monthly_payment=100_000,
     occasional_payments_reducing_period={7: 520_000},
