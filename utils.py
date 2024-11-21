@@ -21,17 +21,17 @@ class MortgageConditions:
     def __str__(self) -> str:
         occasional_payments_reducing_period_str = "\n".join(
             [
-                f"\t{month:3} мес: {payment:6}"
+                f"\t{month:3} мес: {payment:_}"
                 for month, payment in self.occasional_payments_reducing_period.items()
             ]
         )
         return "\n".join(
             [
-                f"Стоимость объекта недвижимости {self.property_cost}",
-                f"Первоначальный взнос {self.initial_payment}",
-                f"Процентная ставка {self.annual_interest_rate}",
+                f"Стоимость объекта недвижимости {self.property_cost:_}",
+                f"Первоначальный взнос {self.initial_payment:_}",
+                f"Процентная ставка {self.annual_interest_rate * 100:.1f} %",
                 f"Начальный срок ипотеки {self.amortization_period_years}",
-                f"Планируемый ежемесячный платеж {self.actual_monthly_payment}",
+                f"Планируемый ежемесячный платеж {self.actual_monthly_payment:_}",
                 (
                     "Планируемые разовые платежи:\n"
                     f"{occasional_payments_reducing_period_str}"
