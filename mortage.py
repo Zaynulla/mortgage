@@ -33,7 +33,7 @@ class Mortgage:
         )
         return "\n".join(
             [
-                f"Стоимость объекта недвижимости {format_thousands(self.property_cost)}",
+                f"Стоимость недвижимости {format_thousands(self.property_cost)}",
                 f"Первоначальный взнос {format_thousands(self.initial_payment)}",
                 f"Процентная ставка {self.annual_interest_rate * 100:.1f}%",
                 f"Начальный срок ипотеки {self.amortization_period_years}",
