@@ -4,7 +4,7 @@ from dataclasses import replace
 
 import pandas as pd
 
-from utils import MortgageConditions
+from mortage import Mortgage
 
 # %%
 # https://pandas.pydata.org/pandas-docs/stable/user_guide/copy_on_write.html
@@ -13,7 +13,7 @@ pd.options.mode.copy_on_write = True
 
 # %%
 print("Базовая вторичка")
-cheap_ugly_second_hand = MortgageConditions(
+cheap_ugly_second_hand = Mortgage(
     property_cost=10_000_000,
     initial_payment=5_000_000,
     annual_interest_rate_percent=15.0,
