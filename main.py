@@ -19,7 +19,8 @@ cheap_ugly_second_hand = Mortgage(
     annual_interest_rate_percent=15.0,
     amortization_period_years=30,
     actual_monthly_payment=100_000,
-    occasional_payments_reducing_period={7: 520_000},
+    payments_reducing_payment={7: 520_000},
+    # payments_reducing_duration={7: 520_000},
 )
 cheap_ugly_second_hand.print_mortgage_main_info()
 
@@ -38,7 +39,7 @@ print("Приличная вторичка после продажи базов�
 well_enough_after_ugly = replace(
     well_enough_second_hand,
     initial_payment=cheap_ugly_second_hand.property_cost,
-    occasional_payments_reducing_period={},  # на втором этапе не получаем льготу
+    payments_reducing_payment={},  # на втором этапе не получаем льготу
 )
 well_enough_after_ugly.print_mortgage_main_info()
 

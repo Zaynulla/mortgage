@@ -1,11 +1,12 @@
 from dataclasses import dataclass
 from math import ceil, log
+from typing import Optional
 
 import pandas as pd
 from IPython.display import display
 
 from const import COLUMNS_DISPLAY_NAMES
-from utils import format_thousands
+from utils import format_payments, format_thousands, month, payment
 
 
 class NotEnoughActualMonthlyPayment(Exception):
@@ -19,18 +20,17 @@ class Mortgage:
     annual_interest_rate_percent: float
     amortization_period_years: int
     actual_monthly_payment: int
-    occasional_payments_reducing_period: dict[int, int]
+    payments_reducing_duration: Optional[dict[month, payment]] = None
+    payments_reducing_payment: Optional[dict[month, payment]] = None
 
     def __post_init__(self) -> None:
         self.annual_interest_rate = self.annual_interest_rate_percent / 100
+        if self.payments_reducing_duration is None:
+            self.payments_reducing_duration = {}
+        if self.payments_reducing_payment is None:
+            self.payments_reducing_payment = {}
 
     def __str__(self) -> str:
-        occasional_payments_reducing_period_str = "\n".join(
-            [
-                f"\t{month:3} мес: {format_thousands(payment)}"
-                for month, payment in self.occasional_payments_reducing_period.items()
-            ]
-        )
         return "\n".join(
             [
                 f"Стоимость недвижимости {format_thousands(self.property_cost)}",
@@ -42,8 +42,12 @@ class Mortgage:
                     f" {format_thousands(self.actual_monthly_payment)}"
                 ),
                 (
-                    "Планируемые разовые платежи:\n"
-                    f"{occasional_payments_reducing_period_str}"
+                    "Планируемые разовые платежи снижающие срок:\n"
+                    f"{format_payments(self.payments_reducing_duration)}"
+                ),
+                (
+                    "Планируемые разовые платежи снижающие платёж:\n"
+                    f"{format_payments(self.payments_reducing_payment)}"
                 ),
             ]
         )
@@ -106,12 +110,11 @@ def calculate_new_amortization_period(
     )
 
 
-def generate_mortgage_schedule(data: Mortgage):
-    amortization_period_months = data.amortization_period_years * 12
-    monthly_interest_rate = data.annual_interest_rate / 12
-    occasional_payments_reducing_period = data.occasional_payments_reducing_period
+def generate_mortgage_schedule(mortage: Mortgage):
+    amortization_period_months = mortage.amortization_period_years * 12
+    monthly_interest_rate = mortage.annual_interest_rate / 12
 
-    remaining_debt = data.property_cost - data.initial_payment
+    remaining_debt = mortage.property_cost - mortage.initial_payment
     mortgage_schedule = []
 
     month = 0
@@ -119,8 +122,9 @@ def generate_mortgage_schedule(data: Mortgage):
         month += 1
         interest_payment = remaining_debt * monthly_interest_rate
 
-        principal_payment = data.actual_monthly_payment - interest_payment
-        principal_payment += occasional_payments_reducing_period.get(month, 0)
+        principal_payment = mortage.actual_monthly_payment - interest_payment
+        principal_payment += mortage.payments_reducing_duration.get(month, 0)
+        principal_payment += mortage.payments_reducing_payment.get(month, 0)
         principal_payment = min(principal_payment, remaining_debt)
 
         remaining_debt -= principal_payment
@@ -135,8 +139,10 @@ def generate_mortgage_schedule(data: Mortgage):
             msg = f"Требуемый платеж {required_monthly_payment}"
             raise NotEnoughActualMonthlyPayment(msg)
 
-        # Обрабатываем разовые платежи
-        if month in occasional_payments_reducing_period:
+        # Если разовый платёж для снижения срок, то считаем новый срок. Для платежей
+        # снижающих платёж доп. обработку не проводим, т.к. по умолчанию все платежи
+        # идут в снижение платежа.
+        if month in mortage.payments_reducing_duration:
             amortization_period_months = month + calculate_new_amortization_period(
                 monthly_interest_rate=monthly_interest_rate,
                 monthly_payment=required_monthly_payment,
