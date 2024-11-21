@@ -28,7 +28,7 @@ cheap_ugly_second_hand.print_mortgage_main_info()
 print("Приличная вторичка")
 well_enough_second_hand = replace(
     cheap_ugly_second_hand,
-    property_cost=15_000_000,
+    property_cost=13_000_000,
 )
 well_enough_second_hand.print_mortgage_main_info()
 
