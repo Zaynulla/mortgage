@@ -4,6 +4,8 @@ from math import ceil, log
 import pandas as pd
 from IPython.display import display
 
+from const import COLUMNS_DISPLAY_NAMES
+
 
 class NotEnoughActualMonthlyPayment(Exception):
     pass
@@ -51,6 +53,7 @@ class MortgageConditions:
         df["Full years"] = df["Month"] // 12
         df["Required monthly payment"] = df["Required monthly payment"].astype(int)
         df = df[["Full years", "Required monthly payment"]]
+        df = df.rename(COLUMNS_DISPLAY_NAMES, axis=1)
         display(df.style.format(thousands=" ").hide(axis="index"))
 
 
