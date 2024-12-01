@@ -4,7 +4,7 @@ from dataclasses import replace
 
 import pandas as pd
 
-from mortage import Mortgage
+from mortgage import Mortgage
 
 # %%
 # https://pandas.pydata.org/pandas-docs/stable/user_guide/copy_on_write.html
