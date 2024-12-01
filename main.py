@@ -1,4 +1,3 @@
-# https://vc.ru/money/716629-kak-rasschityvayutsya-dosrochnye-platezhi-po-ipoteke-vyvod-formul?ysclid=lvsap23zg1652408946
 # %%
 from dataclasses import replace
 

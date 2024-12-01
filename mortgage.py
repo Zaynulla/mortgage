@@ -77,6 +77,7 @@ def calculate_monthly_payment(
     amortization_period_months = int(amortization_period_months)
     monthly_interest_rate = float(monthly_interest_rate)
 
+    # https://vc.ru/money/716629-kak-rasschityvayutsya-dosrochnye-platezhi-po-ipoteke-vyvod-formul
     if (monthly_interest_rate > 0) and (amortization_period_months > 0):
         # TODO вот тут как-будто можно перегруппировать, как минимум вынести множитель
         # monthly_interest_rate. А ещё лучше разделить, если возможно, на слагаемые:
@@ -101,6 +102,7 @@ def calculate_new_amortization_period(
     monthly_payment = float(monthly_payment)
     remaining_balance = float(remaining_balance)
 
+    # https://vc.ru/money/716629-kak-rasschityvayutsya-dosrochnye-platezhi-po-ipoteke-vyvod-formul
     return ceil(
         log(
             monthly_payment
