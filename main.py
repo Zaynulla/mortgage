@@ -18,8 +18,8 @@ cheap_ugly_second_hand = Mortgage(
     annual_interest_rate_percent=15.0,
     amortization_period_years=30,
     actual_monthly_payment=100_000,
-    payments_reducing_payment={7: 520_000},
     # payments_reducing_duration={7: 520_000},
+    payments_reducing_payment={7: 520_000},
 )
 cheap_ugly_second_hand.print_mortgage_main_info()
 
