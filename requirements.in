@@ -1,3 +1,8 @@
 pandas
 ipykernel
 jinja2
+
+# Для автоматической конвертации python скрипта в jupyter notebook вместе с ячейками
+# вывода
+jupytext
+nbconvert
