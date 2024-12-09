@@ -2,7 +2,11 @@
 
 ## Запуск
 
-Ячейки
-https://jupytext.readthedocs.io/en/latest/formats-scripts.html
+Код можно запустить прямо в браузере:
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/Zaynulla/mortgage/main?labpath=app.ipynb)
 
-https://code.visualstudio.com/docs/python/jupyter-support-py#_jupyter-code-cells
+Каждую ячейку можно пересчитывать независимо, но если посчитаны предыдущие ячейки.
+Рекомендуется пересчитывать сразу все ячейки, так код гарантированно будет выполнен
+сверх вниз, в отличие от перезапуска расчёта ячеек в произвольном порядке.
+
+![Рекомендуемый способ запуска](images/jupyter_restart_and_run_all_cells.png)
