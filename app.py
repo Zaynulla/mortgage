@@ -3,7 +3,7 @@ from dataclasses import replace
 
 import pandas as pd
 
-from mortgage import Mortgage
+from libs.mortgage import Mortgage
 
 # %%
 # https://pandas.pydata.org/pandas-docs/stable/user_guide/copy_on_write.html
@@ -51,6 +51,3 @@ it_mortgage_slavery = replace(
     annual_interest_rate_percent=4.6,
 )
 it_mortgage_slavery.print_mortgage_main_info()
-
-
-# %%

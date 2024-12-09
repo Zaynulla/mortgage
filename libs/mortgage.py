@@ -5,8 +5,8 @@ from typing import Optional
 import pandas as pd
 from IPython.display import display
 
-from const import COLUMNS_DISPLAY_NAMES
-from utils import format_payments, format_thousands, month, payment
+from libs.const import COLUMNS_DISPLAY_NAMES
+from libs.utils import format_payments, format_thousands, month, payment
 
 
 class NotEnoughActualMonthlyPayment(Exception):
