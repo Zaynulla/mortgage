@@ -1,3 +1,7 @@
+# %% [markdown]
+# # Ипотечный калькулятор на Python
+
+
 # %%
 from dataclasses import replace
 
@@ -25,7 +29,7 @@ cheap_ugly_second_hand.print_mortgage_main_info()
 
 
 # %%
-print("Приличная вторичка")
+print("Приемлемая вторичка")
 well_enough_second_hand = replace(
     cheap_ugly_second_hand,
     property_cost=13_000_000,
@@ -34,7 +38,7 @@ well_enough_second_hand.print_mortgage_main_info()
 
 
 # %%
-print("Приличная вторичка после продажи базовой вторички")
+print("Приемлемая вторичка после продажи базовой вторички")
 well_enough_after_ugly = replace(
     well_enough_second_hand,
     initial_payment=cheap_ugly_second_hand.property_cost,
